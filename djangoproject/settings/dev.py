@@ -62,6 +62,20 @@ else:
         "djangoproject.middleware.CORSMiddleware",
     )
 
+# Vercel / Neon database override
+if os.getenv("DATABASE_URL"):
+    import urllib.parse
+
+    _db_url = urllib.parse.urlparse(os.getenv("DATABASE_URL"))
+    DATABASES["default"].update({
+        "NAME": _db_url.path.lstrip("/"),
+        "USER": _db_url.username,
+        "PASSWORD": _db_url.password,
+        "HOST": _db_url.hostname,
+        "PORT": str(_db_url.port or ""),
+        "OPTIONS": {"sslmode": "require"},
+    })
+
 # django-recaptcha settings
 SILENCED_SYSTEM_CHECKS = SILENCED_SYSTEM_CHECKS + [
     # Default test keys for development.
