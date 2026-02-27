@@ -62,6 +62,15 @@ else:
         "djangoproject.middleware.CORSMiddleware",
     )
 
+# Vercel static files
+if os.getenv("VERCEL"):
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    )
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 # Vercel / Neon database override
 if os.getenv("DATABASE_URL"):
     import urllib.parse
